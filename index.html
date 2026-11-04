@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emprega Ribas</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #f4f6f9;
+            --text-color: #333;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        section {
+            margin-bottom: 30px;
+        }
+        h2 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            color: var(--primary-color);
+        }
+        form label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        form input, form textarea, form select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        form button {
+            margin-top: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        form button:hover {
+            background-color: #004085;
+        }
+        .vaga-card {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .vaga-card h3 {
+            margin: 0 0 10px 0;
+            color: var(--primary-color);
+        }
+        .search-box {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Emprega Ribas</h1>
+<p>Conectando talentos e oportunidades em Ribas do Rio Pardo</p>
+    </header>
+
+    <main>
+        <!-- Seção de Busca de Vagas -->
+        <section>
+            <h2>Vagas Disponíveis</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Pesquisar por cargo ou empresa..." onkeyup="filtrarVagas()">
+            </div>
+            <div id="listaVagas">
+                <!-- As vagas cadastradas aparecem aqui dinamicamente -->
+            </div>
+        </section>
+
+        <!-- Seção para Empresas Publicarem Vagas -->
+        <section>
+            <h2>Área da Empresa: Publicar Vaga</h2>
+            <form id="formVaga" onsubmit="cadastrarVaga(event)">
+                <label for="empresa">Nome da Empresa:</label>
+                <input type="text" id="empresa" required>
+
+                <label for="cargo">Título da Vaga / Cargo:</label>
+                <input type="cargo" id="cargo" required>
+
+                <label for="descricao">Descrição do Cargo:</label>
+                <textarea id="descricao" rows="3" required></textarea>
+
+                <label for="requisitos">Requisitos:</label>
+                <textarea id="requisitos" rows="2" required></textarea>
+
+                <label for="contato">Contato (E-mail ou WhatsApp):</label>
+                <input type="text" id="contato" required>
+
+                <button type="submit">Publicar Vaga</button>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        // Carregar vagas salvas no navegador (LocalStorage) ou usar exemplos iniciais
+        let vagas = JSON.parse(localStorage.getItem('emprega_ribas_vagas')) || [
+            {
+                empresa: "Comércio Local Ribas",
+                cargo: "Atendente de Loja",
+                descricao: "Atendimento ao cliente, organização de prateleiras e auxílio no caixa.",
+                requisitos: "Ensino médio completo, simpatia e disponibilidade de horário.",
+                contato: "rh@comerciorepresentacao.com"
+            },
+            {
+                empresa: "Supermercado Exemplo",
+                cargo: "Reporor de Mercadorias",
+                descricao: "Reposição de produtos nas gôndolas e controle de validade.",
+                requisitos: "Maior de 18 anos, proatividade.",
+                contato: "(67) 99999-9999"
+            }
+        ];
+
+        function salvarEExibir() {
+            localStorage.setItem('emprega_ribas_vagas', JSON.stringify(vagas));
+            renderizarVagas(vagas);
+        }
+
+        function renderizarVagas(lista) {
+            const container = document.getElementById('listaVagas');
+            container.innerHTML = '';
+
+            if (lista.length === 0) {
+                container.innerHTML = '<p>Nenhuma vaga encontrada.</p>';
+                return;
+            }
+
+            lista.forEach((vaga, index) => {
+                const card = document.createElement('div');
+                card.className = 'vaga-card';
+                card.innerHTML = `
+                    <h3>${vaga.cargo} - <small>${vaga.empresa}</small></h3>
+                    <p><strong>Descrição:</strong> ${vaga.descricao}</p>
+                    <p><strong>Requisitos:</strong> ${vaga.requisitos}</p>
+                    <p><strong>Contato para envio de currículo:</strong> ${vaga.contato}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function cadastrarVaga(event) {
+            event.preventDefault();
+
+            const novaVaga = {
+                empresa: document.getElementById('empresa').value,
+                cargo: document.getElementById('cargo').value,
+                descricao: document.getElementById('descricao').value,
+                requisitos: document.getElementById('requisitos').value,
+                contato: document.getElementById('contato').value
+            };
+
+            vagas.push(novaVaga);
+            salvarEExibir();
+
+            // Limpar formulário
+            document.getElementById('formVaga').reset();
+            alert('Vaga publicada com sucesso!');
+        }
+
+        function filtrarVagas() {
+            const termo = document.getElementById('searchInput').value.toLowerCase();
+            const vagasFiltradas = vagas.filter(v => 
+                v.cargo.toLowerCase().includes(termo) || 
+                v.empresa.toLowerCase().includes(termo)
+            );
+            renderizarVagas(vagasFiltradas);
+        }
+
+        // Executar na carga inicial
+        renderizarVagas(vagas);
+    </script>
+</body>
+</html>
